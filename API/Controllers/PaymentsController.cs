@@ -123,7 +123,7 @@ public class PaymentsController(PaymentsService paymentsService,
             return EventUtility.ConstructEvent(json,
                 Request.Headers["Stripe-Signature"], config["StripeSettings:WhSecret"],throwOnApiVersionMismatch: false);
         }
-        catch (Exception ex)
+        catch (Exception ex) 
         {
             logger.LogError(ex, "Failed to construct stripe event");
             throw new StripeException("Invalid signature");
