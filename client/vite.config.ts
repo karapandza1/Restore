@@ -4,6 +4,11 @@ import mkcert from 'vite-plugin-mkcert'
 
 // https://vite.dev/config/
 export default defineConfig({
+  build:{
+    outDir:'../API/wwwroot',
+    chunkSizeWarningLimit: 2048, //po potrebi smanjiti na 1024
+    emptyOutDir: true
+  },
   server:{
     port:3000
   },

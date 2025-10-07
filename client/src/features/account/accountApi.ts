@@ -8,33 +8,29 @@ import { toast } from "react-toastify";
 export const accountApi = createApi({
     reducerPath: 'accountApi',
     baseQuery: baseQueryWithErrorHandling,
-    tagTypes: ['UserInfo'],
+    tagTypes: ['UserInfo', 'Address'], // dodali Address
     endpoints: (builder) => ({
         login: builder.mutation<void, LoginSchema>({
-            query: (creds) => {
-                return {
-                    url: 'login?useCookies=true',
-                    method: 'POST',
-                    body: creds
-                }
-            },
+            query: (creds) => ({
+                url: 'login?useCookies=true',
+                method: 'POST',
+                body: creds
+            }),
             async onQueryStarted(_, { dispatch, queryFulfilled }) {
                 try {
                     await queryFulfilled;
-                    dispatch(accountApi.util.invalidateTags(['UserInfo']))
+                    dispatch(accountApi.util.invalidateTags(['UserInfo', 'Address']));
                 } catch (error) {
                     console.log(error);
                 }
             }
         }),
         register: builder.mutation<void, object>({
-            query: (creds) => {
-                return {
-                    url: 'account/register',
-                    method: 'POST',
-                    body: creds
-                }
-            },
+            query: (creds) => ({
+                url: 'account/register',
+                method: 'POST',
+                body: creds
+            }),
             async onQueryStarted(_, { queryFulfilled }) {
                 try {
                     await queryFulfilled;
@@ -57,14 +53,13 @@ export const accountApi = createApi({
             }),
             async onQueryStarted(_, { dispatch, queryFulfilled }) {
                 await queryFulfilled;
-                dispatch(accountApi.util.invalidateTags(['UserInfo']));
+                dispatch(accountApi.util.invalidateTags(['UserInfo', 'Address']));
                 router.navigate('/');
             }
         }),
         fetchAddress: builder.query<Address, void>({
-            query: () => ({
-                url: 'account/address'
-            })
+            query: () => 'account/address',
+            providesTags: ['Address'], // RTK Query zna da ovaj query daje Address
         }),
         updateUserAddress: builder.mutation<Address, Address>({
             query: (address) => ({
@@ -75,7 +70,7 @@ export const accountApi = createApi({
             onQueryStarted: async (address, { dispatch, queryFulfilled }) => {
                 const patchResult = dispatch(
                     accountApi.util.updateQueryData('fetchAddress', undefined, (draft) => {
-                        Object.assign(draft, { ...address })
+                        Object.assign(draft, { ...address });
                     })
                 );
 
@@ -83,14 +78,20 @@ export const accountApi = createApi({
                     await queryFulfilled;
                 } catch (error) {
                     patchResult.undo();
-                       console.log(error);
+                    console.log(error);
                 }
-            }
+            },
+            invalidatesTags: ['Address']
         })
     })
 });
 
-export const{
-        useLoginMutation, useRegisterMutation, useLogoutMutation,
-        useUserInfoQuery, useLazyUserInfoQuery, useFetchAddressQuery, useUpdateUserAddressMutation
-    } = accountApi;
+export const {
+    useLoginMutation,
+    useRegisterMutation,
+    useLogoutMutation,
+    useUserInfoQuery,
+    useLazyUserInfoQuery,
+    useFetchAddressQuery,
+    useUpdateUserAddressMutation
+} = accountApi;

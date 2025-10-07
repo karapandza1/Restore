@@ -16,6 +16,7 @@ import CheckoutSuccess from "../../features/checkout/CheckoutSuccess";
 import OrdersPage from "../../features/orders/OrdersPage";
 import OrderDetailedPage from "../../features/orders/OrderDetailedPage";
 import InventoryPage from "../../features/admin/InventoryPage";
+import MyProfilePage from "../../features/profile/MyProfilePage";
 
 export const router = createBrowserRouter([
     {
@@ -38,6 +39,7 @@ export const router = createBrowserRouter([
             {path:'server-error',element:<ServerError/>},
             {path:'login',element:<LoginForm/>},
             {path:'register',element:<RegisterForm/>},
+            { path: 'profile', element: <MyProfilePage/> },
             {path:'not-found',element:<NotFound/>},
             {path: '*', element: <Navigate replace to='/not-found'/>}
         ]
